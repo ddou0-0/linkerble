@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<!-- saved from url=(0048)file:///Users/do-eunjeong/Downloads/index_2.html -->
+<html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linkerble</title>
+<link rel="manifest" href="file:///manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Linkerble">
+<meta name="theme-color" content="#0e0e0f">
+<link rel="apple-touch-icon" href="file:///icon-192.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0e0f;
+    --surface: #17171a;
+    --surface2: #1f1f24;
+    --border: #2a2a30;
+    --accent: #c8f060;
+    --accent2: #60c8f0;
+    --text: #f0f0ec;
+    --muted: #6b6b78;
+    --tag-bg: #1e2a10;
+    --tag-text: #a8d840;
+  }
+
+  body {
+    font-family: -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 32px 24px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 20px;
+  }
+
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 7px;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+
+  .tab.active { background: var(--surface2); color: var(--text); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .input-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+
+  .input-label {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+
+  .input-row { display: flex; gap: 8px; }
+
+  input[type="text"] {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 11px 14px;
+    font-size: 14px;
+    color: var(--text);
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus { border-color: var(--accent); }
+  input[type="text"]::placeholder { color: var(--muted); }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #0e0e0f;
+    border: none;
+    border-radius: 9px;
+    padding: 11px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .loading-bar {
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    margin-top: 12px;
+    display: none;
+    animation: loadbar 1.4s ease infinite;
+  }
+
+  .loading-bar.on { display: block; }
+
+  @keyframes loadbar {
+    0% { width: 0; opacity: 1; }
+    80% { width: 100%; opacity: 1; }
+    100% { width: 100%; opacity: 0; }
+  }
+
+  .loading-text {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    margin-top: 8px;
+    display: none;
+    animation: pulse 1s ease infinite;
+  }
+
+  .loading-text.on { display: block; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 20px;
+    display: none;
+    animation: fadeUp 0.3s ease;
+  }
+
+  .result-card.on { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    margin-bottom: 14px;
+  }
+
+  .site-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--surface2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    flex-shrink: 0;
+  }
+
+  .result-meta { flex: 1; min-width: 0; }
+
+  .result-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.35;
+    margin-bottom: 3px;
+  }
+
+  .result-source {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .ai-badge {
+    font-size: 9px;
+    background: rgba(200,240,96,.1);
+    color: var(--accent);
+    border: 1px solid rgba(200,240,96,.2);
+    border-radius: 20px;
+    padding: 3px 8px;
+    font-family: 'DM Mono', monospace;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .result-summary {
+    font-size: 13px;
+    color: #b0b0bc;
+    line-height: 1.65;
+    padding: 11px 13px;
+    background: var(--surface2);
+    border-radius: 9px;
+    border-left: 2px solid var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .chip.cat {
+    background: var(--surface2);
+    color: var(--muted);
+    border-color: var(--border);
+  }
+
+  .chip.cat.sel {
+    background: rgba(200,240,96,.1);
+    color: var(--accent);
+    border-color: rgba(200,240,96,.3);
+  }
+
+  .chip.tag {
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    border-color: rgba(168,216,64,.15);
+  }
+
+  .chip.tag::after { content: ' ×'; opacity: 0.5; }
+  .chip.tag:hover::after { opacity: 1; }
+
+  .tag-add-row { display: flex; gap: 6px; }
+
+  .tag-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 11px;
+    font-size: 12px;
+    color: var(--text);
+    font-family: inherit;
+    outline: none;
+  }
+
+  .tag-input:focus { border-color: var(--accent); }
+
+  .btn-add-tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 12px;
+    color: var(--accent);
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .action-row { display: flex; gap: 8px; margin-top: 14px; }
+
+  .btn-save {
+    flex: 1;
+    background: var(--accent);
+    color: #0e0e0f;
+    border: none;
+    border-radius: 9px;
+    padding: 11px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn-save:hover { opacity: 0.85; }
+
+  .btn-discard {
+    background: var(--surface2);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 11px 15px;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-discard:hover { color: #ff6060; border-color: #ff6060; }
+
+  /* Library */
+  .search-row { display: flex; gap: 8px; margin-bottom: 14px; }
+
+  .search-input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 10px 13px;
+    font-size: 13px;
+    color: var(--text);
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-input:focus { border-color: var(--accent2); }
+  .search-input::placeholder { color: var(--muted); }
+
+  .btn-search {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 10px 14px;
+    color: var(--accent2);
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-search:hover { border-color: var(--accent2); }
+
+  .ai-answer {
+    background: var(--surface);
+    border: 1px solid rgba(96,200,240,.2);
+    border-radius: 12px;
+    padding: 13px 15px;
+    margin-bottom: 14px;
+    display: none;
+    animation: fadeUp 0.3s ease;
+  }
+
+  .ai-answer.on { display: block; }
+
+  .ai-answer-label {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--accent2);
+    letter-spacing: 0.1em;
+    margin-bottom: 7px;
+  }
+
+  .ai-answer-text { font-size: 13px; color: #b8b8c8; line-height: 1.6; }
+
+  .lib-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .lib-title { font-size: 13px; font-weight: 600; }
+
+  .lib-count {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+  }
+
+  .saved-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 15px;
+    margin-bottom: 10px;
+    animation: fadeUp 0.3s ease;
+    transition: border-color 0.2s;
+  }
+
+  .saved-item:hover { border-color: #3a3a42; }
+
+  .saved-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    line-height: 1.3;
+  }
+
+  .saved-summary {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 9px;
+  }
+
+  .saved-footer { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+
+  .saved-cat {
+    font-size: 10px;
+    background: rgba(200,240,96,.08);
+    color: var(--accent);
+    border: 1px solid rgba(200,240,96,.2);
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .saved-tag {
+    font-size: 10px;
+    color: var(--muted);
+    background: var(--surface2);
+    border-radius: 4px;
+    padding: 2px 6px;
+  }
+
+  .saved-date {
+    margin-left: auto;
+    font-size: 10px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .empty-icon { font-size: 28px; margin-bottom: 10px; }
+
+  /* 폴더 제안 배너 */
+  .folder-suggest {
+    background: linear-gradient(135deg, rgba(200,240,96,.08), rgba(96,200,240,.06));
+    border: 1px solid rgba(200,240,96,.2);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 16px;
+    display: none;
+    animation: fadeUp 0.4s ease;
+  }
+  .folder-suggest.on { display: block; }
+
+  .folder-suggest-header {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .folder-suggest-title { font-size: 12px; font-weight: 600; color: var(--accent); }
+  .folder-suggest-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .btn-analyze-folders {
+    background: var(--accent); color: #0e0e0f;
+    border: none; border-radius: 8px;
+    padding: 7px 13px; font-size: 12px; font-weight: 700;
+    font-family: inherit; cursor: pointer; white-space: nowrap;
+    transition: opacity 0.2s; flex-shrink: 0;
+  }
+  .btn-analyze-folders:hover { opacity: 0.85; }
+  .btn-analyze-folders:disabled { opacity: 0.4; }
+
+  .folder-proposals { display: flex; flex-direction: column; gap: 8px; }
+
+  .folder-proposal {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 11px 13px;
+    display: flex; align-items: center; gap: 10px;
+    transition: border-color 0.15s;
+  }
+  .folder-proposal.approved { border-color: rgba(200,240,96,.4); background: rgba(200,240,96,.05); }
+
+  .folder-icon { font-size: 18px; flex-shrink: 0; }
+  .folder-info { flex: 1; min-width: 0; }
+  .folder-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .folder-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+  .folder-count { font-size: 10px; font-family: 'DM Mono', monospace; color: var(--muted); background: var(--surface); border-radius: 4px; padding: 2px 6px; flex-shrink: 0; }
+  .folder-actions { display: flex; gap: 5px; flex-shrink: 0; }
+
+  .btn-approve {
+    background: rgba(200,240,96,.15); color: var(--accent);
+    border: 1px solid rgba(200,240,96,.3); border-radius: 6px;
+    padding: 4px 10px; font-size: 11px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .btn-approve:hover { background: rgba(200,240,96,.25); }
+  .btn-approve.done { background: rgba(200,240,96,.2); cursor: default; }
+
+  .btn-reject {
+    background: transparent; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 4px 8px; font-size: 11px; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-reject:hover { color: #ff6060; border-color: #ff6060; }
+
+  .folder-apply-row { margin-top: 12px; display: flex; gap: 8px; }
+
+  .btn-apply-all {
+    flex: 1; background: var(--accent); color: #0e0e0f;
+    border: none; border-radius: 8px; padding: 10px;
+    font-size: 13px; font-weight: 700; font-family: inherit;
+    cursor: pointer; transition: opacity 0.2s;
+  }
+  .btn-apply-all:hover { opacity: 0.85; }
+
+  .btn-cancel-folders {
+    background: var(--surface2); color: var(--muted);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 14px; font-size: 12px; font-family: inherit; cursor: pointer;
+  }
+
+  .folder-filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+
+  .folder-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 11px; border-radius: 20px; font-size: 12px;
+    font-weight: 500; cursor: pointer;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--muted); transition: all 0.15s;
+  }
+  .folder-chip.active { background: rgba(200,240,96,.1); color: var(--accent); border-color: rgba(200,240,96,.3); }
+  .folder-chip .fc-count { font-size: 10px; font-family: 'DM Mono', monospace; opacity: 0.7; }
+</style>
+</head>
+<body>
+
+<div class="logo">LINKR / PROTOTYPE</div>
+<h1>링크 던지면<br><span>AI가 정리</span>해요</h1>
+<p class="subtitle">저장할 때 AI 초안 → 내가 확인·수정 → 나중에 대화로 검색</p>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab(&#39;save&#39;)">📥 저장하기</div>
+  <div class="tab" onclick="switchTab(&#39;library&#39;)">📚 보관함</div>
+</div>
+
+<!-- 저장 탭 -->
+<div class="tab-panel active" id="tab-save">
+  <div class="input-section">
+    <div class="input-label">LINK_INPUT — 링크를 붙여넣기 하거나 아래 예시 클릭</div>
+    <div class="input-row">
+      <input type="text" id="linkInput" placeholder="https://...">
+      <button class="btn-primary" onclick="analyzeLink()" id="analyzeBtn">분석하기</button>
+    </div>
+    <div class="loading-bar" id="loadingBar"></div>
+    <div class="loading-text" id="loadingText">AI가 읽고 정리하고 있어요...</div>
+  </div>
+
+  <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:20px;">
+    <span style="font-size:11px; color:var(--muted); align-self:center;">예시 →</span>
+    <button onclick="fillDemo(&#39;dezeen&#39;)" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:11px;color:var(--muted);cursor:pointer;">dezeen.com</button>
+    <button onclick="fillDemo(&#39;nngroup&#39;)" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:11px;color:var(--muted);cursor:pointer;">nngroup.com</button>
+    <button onclick="fillDemo(&#39;behance&#39;)" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:11px;color:var(--muted);cursor:pointer;">behance.net</button>
+    <button onclick="fillDemo(&#39;awwwards&#39;)" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:11px;color:var(--muted);cursor:pointer;">awwwards.com</button>
+  </div>
+
+  <div class="result-card" id="resultCard">
+    <div class="result-header">
+      <div class="site-icon" id="siteIcon">🔗</div>
+      <div class="result-meta">
+        <div class="result-title" id="resultTitle"></div>
+        <div class="result-source" id="resultSource"></div>
+      </div>
+      <div class="ai-badge">AI 초안</div>
+    </div>
+
+    <div class="result-summary" id="resultSummary"></div>
+
+    <div class="section-label">CATEGORY — 맞으면 그냥 두고, 틀리면 바꾸세요</div>
+    <div class="chips" id="catChips"></div>
+
+    <div class="section-label">TAGS — 삭제하거나 추가 가능</div>
+    <div class="chips" id="tagChips"></div>
+    <div class="tag-add-row">
+      <input type="text" class="tag-input" id="tagInput" placeholder="태그 직접 추가..." onkeydown="if(event.key===&#39;Enter&#39;) addTag()">
+      <button class="btn-add-tag" onclick="addTag()">+ 추가</button>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-save" onclick="saveItem()">✓ 이대로 저장</button>
+      <button class="btn-discard" onclick="discard()">버리기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 보관함 탭 -->
+<div class="tab-panel" id="tab-library">
+  <div class="search-row">
+    <input type="text" class="search-input" id="searchInput" placeholder="&quot;저번에 본 리서치 글 있어?&quot; 처럼 물어보세요" onkeydown="if(event.key===&#39;Enter&#39;) searchLib()">
+    <button class="btn-search" onclick="searchLib()">검색</button>
+  </div>
+
+  <div class="ai-answer" id="aiAnswer">
+    <div class="ai-answer-label">AI_ANSWER</div>
+    <div class="ai-answer-text" id="aiAnswerText"></div>
+  </div>
+
+  <!-- 폴더 AI 제안 배너 -->
+  <div class="folder-suggest" id="folderSuggest">
+    <div class="folder-suggest-header">
+      <div>
+        <div class="folder-suggest-title">✦ AI 폴더 제안</div>
+        <div class="folder-suggest-sub">저장된 링크를 분석해서 폴더를 만들어드릴게요</div>
+      </div>
+      <button class="btn-analyze-folders" id="btnAnalyzeFolders" onclick="analyzeFolders()">분석하기</button>
+    </div>
+    <div class="folder-proposals" id="folderProposals"></div>
+    <div class="folder-apply-row" id="folderApplyRow" style="display:none;">
+      <button class="btn-apply-all" onclick="applyFolders()">✓ 선택한 폴더 적용</button>
+      <button class="btn-cancel-folders" onclick="cancelFolders()">취소</button>
+    </div>
+  </div>
+
+  <!-- 폴더 필터 -->
+  <div class="folder-filter-row" id="folderFilterRow"></div>
+
+  <div class="lib-header">
+    <div class="lib-title">저장된 링크</div>
+    <div class="lib-count" id="libCount">0개</div>
+  </div>
+
+  <div id="savedList">
+    <div class="empty"><div class="empty-icon">📭</div>아직 저장된 링크가 없어요.<br>링크를 분석하고 저장해보세요!</div>
+  </div>
+</div>
+
+<script>
+const CATS = ['UX/UI','브랜딩','타이포그래피','모션','트렌드','툴/리소스','케이스스터디','영감'];
+
+const DEMOS = {
+  dezeen: { url:'https://dezeen.com/awards/2025', icon:'🏛️', title:'Dezeen Awards 2025: 올해의 인테리어 디자인 수상작 발표', source:'dezeen.com', summary:'2025 디자인 어워드 인테리어 부문 수상작들을 소개합니다. 지속가능성과 자연 소재를 활용한 작품들이 두드러졌으며, 한국 스튜디오 두 곳이 수상의 영예를 안았습니다.', category:'트렌드', tags:['어워드','인테리어','2025','지속가능성'] },
+  nngroup: { url:'https://nngroup.com/articles/user-interview-guide', icon:'🧪', title:'사용자 인터뷰를 제대로 하는 방법: NN/g 완전 가이드', source:'nngroup.com', summary:'닐슨노먼그룹이 발행한 사용자 인터뷰 완전 가이드. 질문 설계부터 분석까지 단계별로 설명하며, 초보 리서처가 흔히 저지르는 실수 7가지를 짚어줍니다.', category:'UX/UI', tags:['리서치','인터뷰','방법론','UX'] },
+  behance: { url:'https://behance.net/gallery/studio-feixen', icon:'🎨', title:'Studio Feixen의 새 브랜딩 프로젝트: 스위스 문화재단', source:'behance.net', summary:'스위스 그래픽 디자인 스튜디오 Feixen이 작업한 문화재단 리브랜딩 케이스. 모듈러 그리드 시스템과 가변 폰트를 활용해 유연하면서도 일관된 아이덴티티를 구축했습니다.', category:'브랜딩', tags:['리브랜딩','아이덴티티','스위스','가변폰트'] },
+  awwwards: { url:'https://awwwards.com/sites/portfolio-2025', icon:'⭐', title:'AWWWARDS Site of the Day: Immersive 3D Portfolio', source:'awwwards.com', summary:'오늘의 사이트 수상작. Three.js와 GSAP을 활용한 몰입형 3D 포트폴리오로, 스크롤에 따라 공간이 변하는 인터랙션이 인상적입니다.', category:'모션', tags:['3D','GSAP','포트폴리오','인터랙션'] },
+};
+
+let cur = null;
+let selCat = '';
+let curTags = [];
+let saved = [];
+let folders = [];
+let proposals = [];
+let activeFolder = 'all';
+
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach((el,i) => el.classList.toggle('active', (i===0&&t==='save')||(i===1&&t==='library')));
+  document.querySelectorAll('.tab-panel').forEach((el,i) => el.classList.toggle('active', (i===0&&t==='save')||(i===1&&t==='library')));
+  if (t==='library') renderLib();
+}
+
+function fillDemo(key) {
+  document.getElementById('linkInput').value = DEMOS[key].url;
+}
+
+async function analyzeLink() {
+  const url = document.getElementById('linkInput').value.trim();
+  if (!url) return;
+
+  const btn = document.getElementById('analyzeBtn');
+  btn.disabled = true; btn.textContent = '분석 중...';
+  document.getElementById('loadingBar').classList.add('on');
+  document.getElementById('loadingText').classList.add('on');
+  document.getElementById('resultCard').classList.remove('on');
+
+  // check demo match
+  let data = null;
+  for (const d of Object.values(DEMOS)) {
+    if (url.includes(d.source.split('.')[0])) { data = d; break; }
+  }
+
+  await new Promise(r => setTimeout(r, data ? 1200 : 2200));
+
+  if (!data) {
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({
+          model:"claude-sonnet-4-20250514",
+          max_tokens:800,
+          system:`URL을 보고 디자인 링크를 분류하는 AI입니다. JSON만 반환하세요. 마크다운 없이.
+카테고리는 반드시: UX/UI, 브랜딩, 타이포그래피, 모션, 트렌드, 툴/리소스, 케이스스터디, 영감 중 하나.
+형식: {"icon":"이모지","title":"제목(한국어)","source":"도메인","summary":"2-3문장 한국어 요약","category":"카테고리","tags":["태그1","태그2","태그3"]}`,
+          messages:[{role:"user",content:`이 URL을 분석해주세요: ${url}`}]
+        })
+      });
+      const json = await res.json();
+      data = JSON.parse(json.content[0].text.replace(/```json|```/g,'').trim());
+    } catch(e) {
+      data = { icon:'🔗', title:url, source:url.split('/')[2]||'unknown', summary:'링크 내용을 분석하지 못했어요. 태그나 카테고리를 직접 수정해보세요.', category:'트렌드', tags:['미분류'] };
+    }
+  }
+
+  document.getElementById('loadingBar').classList.remove('on');
+  document.getElementById('loadingText').classList.remove('on');
+
+  cur = { ...data, url };
+  selCat = data.category;
+  curTags = [...data.tags];
+
+  document.getElementById('siteIcon').textContent = data.icon;
+  document.getElementById('resultTitle').textContent = data.title;
+  document.getElementById('resultSource').textContent = data.source;
+  document.getElementById('resultSummary').textContent = data.summary;
+
+  renderCats(); renderTags();
+  document.getElementById('resultCard').classList.add('on');
+  btn.disabled = false; btn.textContent = '분석하기';
+}
+
+function renderCats() {
+  document.getElementById('catChips').innerHTML = CATS.map(c =>
+    `<div class="chip cat${c===selCat?' sel':''}" onclick="selectCat('${c}')">${c}</div>`
+  ).join('');
+}
+
+function selectCat(c) {
+  selCat = c; renderCats();
+}
+
+function renderTags() {
+  document.getElementById('tagChips').innerHTML = curTags.map((t,i) =>
+    `<div class="chip tag" onclick="removeTag(${i})">#${t}</div>`
+  ).join('');
+}
+
+function removeTag(i) { curTags.splice(i,1); renderTags(); }
+
+function addTag() {
+  const el = document.getElementById('tagInput');
+  const v = el.value.trim().replace(/^#/,'');
+  if (v && !curTags.includes(v)) { curTags.push(v); renderTags(); }
+  el.value = '';
+}
+
+function saveItem() {
+  if (!cur) return;
+  saved.unshift({ ...cur, category:selCat, tags:[...curTags], savedAt: new Date().toLocaleDateString('ko-KR',{month:'short',day:'numeric'}) });
+  document.getElementById('resultCard').classList.remove('on');
+  document.getElementById('linkInput').value = '';
+  cur = null;
+}
+
+function discard() {
+  document.getElementById('resultCard').classList.remove('on');
+  document.getElementById('linkInput').value = '';
+  cur = null;
+}
+
+async function searchLib() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) return;
+
+  const ansEl = document.getElementById('aiAnswer');
+  const ansText = document.getElementById('aiAnswerText');
+  ansEl.classList.add('on');
+  ansText.textContent = '보관함에서 찾고 있어요...';
+
+  if (saved.length === 0) {
+    ansText.textContent = '아직 저장된 링크가 없어요. 먼저 링크를 저장해보세요!';
+    return;
+  }
+
+  const ctx = JSON.stringify(saved.map((s,i) => ({id:i, title:s.title, summary:s.summary, category:s.category, tags:s.tags})));
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model:"claude-sonnet-4-20250514",
+        max_tokens:400,
+        system:`사용자의 저장된 링크 보관함에서 질문에 맞는 항목을 찾아주는 AI입니다. 친근하고 간결하게 한국어로 답하세요. 관련 항목이 있으면 제목을 구체적으로 언급하세요. 없으면 솔직하게 없다고 하세요.\n보관함: ${ctx}`,
+        messages:[{role:"user",content:q}]
+      })
+    });
+    const json = await res.json();
+    ansText.textContent = json.content[0].text;
+  } catch(e) {
+    const found = saved.filter(s => s.title.includes(q) || s.summary.includes(q) || s.category.includes(q) || s.tags.some(t=>t.includes(q)));
+    ansText.textContent = found.length ? `"${found[0].title}" 이 항목이 관련 있을 것 같아요!` : `"${q}"와 관련된 저장 항목을 찾지 못했어요.`;
+  }
+
+  renderLib();
+}
+
+function renderLib() {
+  const el = document.getElementById('savedList');
+  // 폴더 제안 배너 표시 (3개 이상 저장 시)
+  const suggestEl = document.getElementById('folderSuggest');
+  if (saved.length >= 3) suggestEl.classList.add('on');
+
+  // 폴더 필터 렌더
+  renderFolderFilter();
+
+  // 폴더 필터에 따라 아이템 필터링
+  let items = saved;
+  if (activeFolder !== 'all' && folders[activeFolder]) {
+    const ids = folders[activeFolder].itemIds;
+    items = ids.map(i => saved[i]).filter(Boolean);
+  }
+
+  document.getElementById('libCount').textContent = `${items.length}개`;
+  if (items.length === 0) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📭</div>` +
+      (activeFolder !== 'all' ? '이 폴더에 저장된 링크가 없어요.' : '아직 저장된 링크가 없어요.<br>링크를 분석하고 저장해보세요!') +
+      `</div>`;
+    return;
+  }
+  el.innerHTML = items.map(s => `
+    <div class="saved-item">
+      <div class="saved-title">${s.icon} ${s.title}</div>
+      <div class="saved-summary">${s.summary}</div>
+      <div class="saved-footer">
+        <span class="saved-cat">${s.category}</span>
+        ${s.tags.slice(0,3).map(t=>`<span class="saved-tag">#${t}</span>`).join('')}
+        <span class="saved-date">${s.savedAt}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+
+async function analyzeFolders() {
+  if (saved.length < 3) {
+    document.getElementById('folderProposals').innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 0;">링크를 3개 이상 저장하면 폴더를 제안해드릴게요!</div>';
+    document.getElementById('folderApplyRow').style.display = 'none';
+    return;
+  }
+
+  const btn = document.getElementById('btnAnalyzeFolders');
+  btn.disabled = true; btn.textContent = '분석 중...';
+  document.getElementById('folderProposals').innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 0;animation:pulse 1s ease infinite;">패턴 파악 중...</div>';
+
+  const ctx = JSON.stringify(saved.map((s,i) => ({id:i, title:s.title, summary:s.summary, category:s.category, tags:s.tags})));
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model:"claude-sonnet-4-20250514",
+        max_tokens:800,
+        system:`사용자의 저장된 링크들을 분석해서 의미있는 폴더 구조를 제안하는 AI입니다.
+링크들의 주제, 카테고리, 태그를 보고 자연스러운 폴더 2~4개를 제안하세요.
+카테고리명이 아니라 사용자의 실제 관심사 기반으로 이름을 지어주세요. (예: "AI 트렌드", "데일리룩 레퍼런스", "UX 리서치 방법론")
+JSON만 반환하세요. 마크다운 없이.
+형식: [{"icon":"이모지","name":"폴더명","desc":"한줄설명","itemIds":[링크인덱스배열]}]`,
+        messages:[{role:"user", content:`이 링크들을 분석해서 폴더를 제안해주세요:
+${ctx}`}]
+      })
+    });
+    const json = await res.json();
+    proposals = JSON.parse(json.content[0].text.replace(/```json|```/g,'').trim());
+  } catch(e) {
+    // fallback: group by category
+    const groups = {};
+    saved.forEach((s,i) => {
+      if (!groups[s.category]) groups[s.category] = [];
+      groups[s.category].push(i);
+    });
+    const icons = {'UX/UI':'🧪','브랜딩':'✏️','타이포그래피':'🔤','모션':'🎬','트렌드':'📈','툴/리소스':'🛠️','케이스스터디':'📋','영감':'💡'};
+    proposals = Object.entries(groups).filter(([,ids])=>ids.length>0).map(([cat,ids])=>({
+      icon: icons[cat]||'📁', name: cat, desc: `${cat} 관련 링크 모음`, itemIds: ids
+    }));
+  }
+
+  renderProposals();
+  btn.disabled = false; btn.textContent = '다시 분석';
+}
+
+function renderProposals() {
+  const el = document.getElementById('folderProposals');
+  if (!proposals.length) { el.innerHTML = ''; return; }
+
+  // 승인 상태 초기화
+  proposals.forEach(p => { if (p.approved === undefined) p.approved = true; });
+
+  el.innerHTML = proposals.map((p,i) => `
+    <div class="folder-proposal${p.approved ? ' approved' : ''}" id="proposal-${i}">
+      <div class="folder-icon">${p.icon}</div>
+      <div class="folder-info">
+        <div class="folder-name">${p.name}</div>
+        <div class="folder-desc">${p.desc}</div>
+      </div>
+      <div class="folder-count">${p.itemIds.length}개</div>
+      <div class="folder-actions">
+        <button class="btn-approve${p.approved?' done':''}" onclick="toggleProposal(${i})">${p.approved ? '✓ 선택됨' : '선택'}</button>
+        <button class="btn-reject" onclick="rejectProposal(${i})">✕</button>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('folderApplyRow').style.display = 'flex';
+}
+
+function toggleProposal(i) {
+  proposals[i].approved = !proposals[i].approved;
+  renderProposals();
+}
+
+function rejectProposal(i) {
+  proposals.splice(i, 1);
+  renderProposals();
+  if (!proposals.length) document.getElementById('folderApplyRow').style.display = 'none';
+}
+
+function applyFolders() {
+  const approved = proposals.filter(p => p.approved);
+  approved.forEach(p => {
+    if (!folders.find(f => f.name === p.name)) {
+      folders.push({ icon: p.icon, name: p.name, desc: p.desc, itemIds: p.itemIds });
+    }
+  });
+  proposals = [];
+  document.getElementById('folderProposals').innerHTML = `<div style="font-size:12px;color:var(--accent);padding:6px 0;">✓ ${approved.length}개 폴더가 적용됐어요!</div>`;
+  document.getElementById('folderApplyRow').style.display = 'none';
+  document.getElementById('btnAnalyzeFolders').textContent = '다시 분석';
+  renderFolderFilter();
+  renderLib();
+}
+
+function cancelFolders() {
+  proposals = [];
+  document.getElementById('folderProposals').innerHTML = '';
+  document.getElementById('folderApplyRow').style.display = 'none';
+}
+
+function renderFolderFilter() {
+  const el = document.getElementById('folderFilterRow');
+  if (!folders.length) { el.innerHTML = ''; return; }
+
+  const all = `<div class="folder-chip${activeFolder==='all'?' active':''}" onclick="setFolder('all')">전체 <span class="fc-count">${saved.length}</span></div>`;
+  const chips = folders.map((f,i) =>
+    `<div class="folder-chip${activeFolder===i?' active':''}" onclick="setFolder(${i})">${f.icon} ${f.name} <span class="fc-count">${f.itemIds.length}</span></div>`
+  ).join('');
+  el.innerHTML = all + chips;
+}
+
+function setFolder(key) {
+  activeFolder = key;
+  renderFolderFilter();
+  renderLib();
+}
+
+// PWA 서비스워커 등록
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js');
+  });
+}
+
+// 공유하기로 들어온 링크 처리
+window.addEventListener('load', () => {
+  const params = new URLSearchParams(window.location.search);
+  const sharedUrl = params.get('url') || params.get('text');
+  if (sharedUrl) {
+    const input = document.getElementById('linkInput');
+    if (input) {
+      input.value = sharedUrl;
+      switchTab('save');
+      // 자동으로 분석 시작
+      setTimeout(() => analyzeLink(), 500);
+    }
+  }
+});
+</script>
+
+
+</body></html>
