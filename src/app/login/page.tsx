@@ -7,17 +7,28 @@ import { createClient } from "@/lib/supabase/client";
 import { Link2 } from "lucide-react";
 
 export default function LoginPage() {
+  const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [loading, setLoading] = useState(false);
   const [socialLoading, setSocialLoading] = useState<"google" | "kakao" | null>(null);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     createClient().auth.getUser().then(({ data }: { data: { user: unknown } }) => {
       if (data.user) window.location.href = "/";
     });
   }, []);
+
+  function switchMode(next: "login" | "signup") {
+    setMode(next);
+    setError("");
+    setSuccess("");
+    setPassword("");
+    setPasswordConfirm("");
+  }
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -26,6 +37,24 @@ export default function LoginPage() {
     const { error } = await createClient().auth.signInWithPassword({ email, password });
     if (error) setError("이메일 또는 비밀번호가 올바르지 않아요.");
     else window.location.href = "/";
+    setLoading(false);
+  }
+
+  async function handleSignup(e: React.FormEvent) {
+    e.preventDefault();
+    if (password !== passwordConfirm) {
+      setError("비밀번호가 일치하지 않아요.");
+      return;
+    }
+    if (password.length < 6) {
+      setError("비밀번호는 6자 이상이어야 해요.");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    const { error } = await createClient().auth.signUp({ email, password });
+    if (error) setError(error.message);
+    else setSuccess("가입 확인 이메일을 보냈어요. 메일함을 확인해주세요! 📬");
     setLoading(false);
   }
 
@@ -56,7 +85,7 @@ export default function LoginPage() {
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 space-y-4">
           <div>
-            <h1 className="text-xl font-bold mb-1">로그인</h1>
+            <h1 className="text-xl font-bold mb-1">{mode === "login" ? "로그인" : "회원가입"}</h1>
             <p className="text-sm text-gray-400">간편하게 시작하세요</p>
           </div>
 
@@ -96,8 +125,8 @@ export default function LoginPage() {
             <div className="flex-1 h-px bg-gray-100" />
           </div>
 
-          {/* 이메일 로그인 */}
-          <form onSubmit={handleLogin} className="space-y-2.5">
+          {/* 이메일 폼 */}
+          <form onSubmit={mode === "login" ? handleLogin : handleSignup} className="space-y-2.5">
             <input
               type="email"
               placeholder="이메일 주소"
@@ -114,15 +143,45 @@ export default function LoginPage() {
               required
               className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             />
+            {mode === "signup" && (
+              <input
+                type="password"
+                placeholder="비밀번호 확인"
+                value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)}
+                required
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              />
+            )}
             {error && <p className="text-xs text-red-500">{error}</p>}
+            {success && <p className="text-xs text-green-600 font-medium">{success}</p>}
             <button
               type="submit"
               disabled={loading || !!socialLoading}
               className="w-full py-3 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition disabled:opacity-50"
             >
-              {loading ? "로그인 중..." : "이메일로 로그인"}
+              {loading
+                ? (mode === "login" ? "로그인 중..." : "가입 중...")
+                : (mode === "login" ? "이메일로 로그인" : "이메일로 회원가입")}
             </button>
           </form>
+
+          {/* 모드 전환 */}
+          <p className="text-center text-xs text-gray-400">
+            {mode === "login" ? (
+              <>계정이 없으신가요?{" "}
+                <button onClick={() => switchMode("signup")} className="text-indigo-600 font-semibold hover:underline">
+                  회원가입
+                </button>
+              </>
+            ) : (
+              <>이미 계정이 있으신가요?{" "}
+                <button onClick={() => switchMode("login")} className="text-indigo-600 font-semibold hover:underline">
+                  로그인
+                </button>
+              </>
+            )}
+          </p>
         </div>
       </div>
     </div>
