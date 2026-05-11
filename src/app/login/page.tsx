@@ -25,7 +25,7 @@ export default function LoginPage() {
     const { error } = await createClient().auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/api/auth/callback`,
+        emailRedirectTo: `${window.location.origin}/auth/confirm`,
       },
     });
     if (error) setError(error.message);
