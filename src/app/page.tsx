@@ -199,7 +199,12 @@ export default function HomePage() {
       {/* Header */}
       <header className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-gray-200">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <span className="font-bold text-sm tracking-tight px-1">Linkerble</span>
+          <button
+            onClick={() => window.location.reload()}
+            className="font-bold text-sm tracking-tight px-1 hover:opacity-70 transition"
+          >
+            Linkerble
+          </button>
 
           <div className="flex items-center gap-1">
             {/* 보관됨 바로가기 */}
