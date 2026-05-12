@@ -1,36 +1,38 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createBrowserClient } from "@supabase/ssr";
 import { Link2 } from "lucide-react";
 
 export default function AuthConfirmPage() {
   const [status, setStatus] = useState<"loading" | "error">("loading");
 
   useEffect(() => {
-    // URL 해시의 access_token을 Supabase가 자동으로 세션으로 처리
-    const supabase = createClient();
+    // 싱글턴 재사용 방지 — 매번 새 인스턴스로 해시 토큰 재처리
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
 
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
+    // SIGNED_IN 이벤트 수신 → 바로 홈으로
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && session) {
         window.location.href = "/";
       }
     });
 
-    // 이미 세션이 있을 수도 있으니 체크
+    // 이미 세션이 있는 경우 (재방문 등)
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        window.location.href = "/";
-      } else {
-        // 해시 토큰이 처리될 시간을 줌
-        setTimeout(() => {
-          supabase.auth.getSession().then(({ data }) => {
-            if (data.session) window.location.href = "/";
-            else setStatus("error");
-          });
-        }, 2000);
-      }
+      if (data.session) window.location.href = "/";
     });
+
+    // 6초 안에 세션이 잡히지 않으면 에러
+    const timer = setTimeout(() => setStatus("error"), 6000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timer);
+    };
   }, []);
 
   return (
