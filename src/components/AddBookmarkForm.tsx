@@ -127,7 +127,7 @@ export default function AddBookmarkForm({ onAdded }: Props) {
               text-sm font-semibold hover:bg-indigo-700 transition disabled:opacity-40 whitespace-nowrap flex-shrink-0"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-            {loading ? "분석 중..." : "저장"}
+            {loading ? "저장 중..." : "저장"}
           </button>
         </div>
 
