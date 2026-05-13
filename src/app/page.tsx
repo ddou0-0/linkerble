@@ -10,7 +10,7 @@ import BookmarkCard from "@/components/BookmarkCard";
 import ReadingPanel from "@/components/ReadingPanel";
 import FolderPickerSheet from "@/components/FolderPickerSheet";
 import Toast from "@/components/Toast";
-import { LogOut, Search, Settings, Archive, UserCircle2, Bell, X } from "lucide-react";
+import { LogOut, Search, Settings, Archive, UserCircle2, Bell, X, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { usePush } from "@/lib/usePush";
@@ -267,6 +267,14 @@ export default function HomePage() {
                     >
                       <Settings className="w-4 h-4" />
                       설정 · 저장 단축어
+                    </Link>
+                    <Link
+                      href="/intro"
+                      onClick={() => setMenuOpen(false)}
+                      className="w-full flex items-center gap-2 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition"
+                    >
+                      <Info className="w-4 h-4" />
+                      서비스 소개
                     </Link>
                     <button
                       onClick={handleLogout}
