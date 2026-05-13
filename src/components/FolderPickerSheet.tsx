@@ -25,14 +25,21 @@ export default function FolderPickerSheet({ folders, currentFolder, onSelect, on
       {/* Backdrop */}
       <div className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm" onClick={onCancel} />
 
-      {/* Sheet */}
-      <div className="fixed inset-x-0 bottom-0 z-[60] bg-white rounded-t-3xl shadow-2xl pb-safe">
-        {/* 핸들 */}
-        <div className="flex justify-center pt-3 pb-1">
+      {/* Sheet — mobile: bottom sheet / desktop: center modal */}
+      <div className="
+        fixed z-[60] bg-white shadow-2xl
+        /* mobile */
+        inset-x-0 bottom-0 rounded-t-3xl pb-safe
+        /* desktop */
+        md:inset-x-auto md:inset-y-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2
+        md:w-[420px] md:rounded-2xl md:bottom-auto
+      ">
+        {/* 핸들 — 모바일만 */}
+        <div className="md:hidden flex justify-center pt-3 pb-1">
           <div className="w-10 h-1 rounded-full bg-gray-200" />
         </div>
 
-        <div className="px-5 pt-2 pb-6 space-y-4">
+        <div className="px-5 pt-4 pb-6 space-y-4 md:pt-5">
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-base text-gray-900">어디에 보관할까요?</h3>
             <button onClick={onCancel} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 transition">
