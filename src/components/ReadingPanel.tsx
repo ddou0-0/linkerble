@@ -201,16 +201,19 @@ export default function ReadingPanel({
 
       {/* Panel — mobile: bottom sheet / desktop: right side panel */}
       <div
-        className={`fixed z-50 flex flex-col bg-white shadow-2xl overflow-hidden transition-all duration-300 ease-out
-          /* mobile */
-          inset-x-0 bottom-0
-          ${expanded ? "h-[100dvh] rounded-none" : "h-[88svh] rounded-t-3xl"}
-          ${panelVisible ? "translate-y-0" : "translate-y-full"}
-          /* desktop */
-          md:inset-x-auto md:inset-y-0 md:right-0 md:w-[480px] md:h-full md:rounded-none md:rounded-l-3xl
-          ${panelVisible ? "md:translate-x-0" : "md:translate-x-full"}
-          md:translate-y-0
-        `}
+        className={[
+          // 공통
+          "fixed z-50 flex flex-col bg-white shadow-2xl overflow-hidden transition-all duration-300 ease-out",
+          // 모바일: 하단 바텀시트
+          "inset-x-0 bottom-0",
+          expanded ? "h-[100dvh] rounded-none" : "h-[88svh] rounded-t-3xl",
+          panelVisible ? "translate-y-0" : "translate-y-full",
+          // PC: 우측 슬라이드 패널 (md:는 모바일 값 덮어씀)
+          "md:inset-x-auto md:inset-y-0 md:right-0 md:bottom-auto",
+          "md:w-[480px] md:h-full md:rounded-none md:rounded-l-3xl",
+          "md:translate-y-0",
+          panelVisible ? "md:translate-x-0" : "md:translate-x-full",
+        ].join(" ")}
       >
         {/* Handle — 모바일 드래그용 (PC에서 숨김) */}
         <div

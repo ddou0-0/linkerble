@@ -26,14 +26,14 @@ export default function FolderPickerSheet({ folders, currentFolder, onSelect, on
       <div className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm" onClick={onCancel} />
 
       {/* Sheet — mobile: bottom sheet / desktop: center modal */}
-      <div className="
-        fixed z-[60] bg-white shadow-2xl
-        /* mobile */
-        inset-x-0 bottom-0 rounded-t-3xl pb-safe
-        /* desktop */
-        md:inset-x-auto md:inset-y-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2
-        md:w-[420px] md:rounded-2xl md:bottom-auto
-      ">
+      <div className={[
+        "fixed z-[60] bg-white shadow-2xl",
+        // 모바일: 하단 바텀시트
+        "inset-x-0 bottom-0 rounded-t-3xl",
+        // PC: 중앙 모달
+        "md:inset-x-auto md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2",
+        "md:w-[420px] md:rounded-2xl",
+      ].join(" ")}>
         {/* 핸들 — 모바일만 */}
         <div className="md:hidden flex justify-center pt-3 pb-1">
           <div className="w-10 h-1 rounded-full bg-gray-200" />
