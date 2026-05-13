@@ -15,7 +15,7 @@ export async function summarizeAndTag(crawl: CrawlResult, memo?: string): Promis
     ? `\n사용자 메모 (저장 당시 컨텍스트):\n${memo.trim()}`
     : "";
 
-  const prompt = `다음 웹페이지 내용을 분석해서 JSON으로 응답해줘.
+  const prompt = `다음 웹페이지 내용을 분석해서 JSON으로 응답해줘. 반드시 순수 JSON만 출력하고 마크다운 코드블록(\`\`\`)은 절대 사용하지 마.
 
 URL: ${crawl.url}
 제목: ${crawl.title}
@@ -43,10 +43,20 @@ ${crawl.text_content}${memoSection}
     messages: [{ role: "user", content: prompt }],
   });
 
-  const text = message.content[0].type === "text" ? message.content[0].text : "";
+  const raw = message.content[0].type === "text" ? message.content[0].text : "";
+
+  // 마크다운 코드블록 제거 후 JSON 추출
+  const text = raw
+    .replace(/^```(?:json)?\s*/i, "")  // 앞 ```json 제거
+    .replace(/\s*```$/, "")             // 뒤 ``` 제거
+    .trim();
+
+  // { } 사이 JSON만 잘라내기 (앞뒤 잡문 방어)
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  const jsonStr = jsonMatch ? jsonMatch[0] : text;
 
   try {
-    const json = JSON.parse(text.trim());
+    const json = JSON.parse(jsonStr);
     return {
       summary: json.summary ?? "",
       intent: json.intent ?? "",
@@ -54,6 +64,7 @@ ${crawl.text_content}${memoSection}
       folder: json.folder ?? "미분류",
     };
   } catch {
-    return { summary: text.slice(0, 300), intent: "", tags: [], folder: "미분류" };
+    // 파싱 완전 실패 시 빈 값으로 graceful fallback
+    return { summary: "", intent: "", tags: [], folder: "미분류" };
   }
 }
