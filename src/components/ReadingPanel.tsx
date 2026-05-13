@@ -142,16 +142,30 @@ export default function ReadingPanel({
 
   async function handleReminderSet(key: string | null) {
     setReminderSaving(true);
-    const remind_at = key ? getReminderDate(key).toISOString() : null;
-    await fetch(`/api/bookmarks/${bm.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ remind_at }),
-    });
-    setRemindAt(remind_at);
-    onReminderSet?.(bm.id, remind_at);
-    setReminderSaving(false);
-    setToast(remind_at ? "🔔 리마인더가 설정됐어요" : "리마인더가 취소됐어요");
+    try {
+      // 알림 미구독 상태면 자동으로 권한 요청 후 구독
+      if (key && !push.subscribed && push.supported) {
+        try {
+          await push.subscribe();
+        } catch {
+          setToast("알림 권한이 거부됐어요. 브라우저 설정에서 허용해주세요.");
+          setReminderSaving(false);
+          return;
+        }
+      }
+
+      const remind_at = key ? getReminderDate(key).toISOString() : null;
+      await fetch(`/api/bookmarks/${bm.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ remind_at }),
+      });
+      setRemindAt(remind_at);
+      onReminderSet?.(bm.id, remind_at);
+      setToast(remind_at ? "🔔 리마인더가 설정됐어요" : "리마인더가 취소됐어요");
+    } finally {
+      setReminderSaving(false);
+    }
   }
 
   /* ── 핸들 드래그 (React 이벤트로 충분) ── */
@@ -380,16 +394,13 @@ export default function ReadingPanel({
                     <button
                       key={key}
                       onClick={() => handleReminderSet(key)}
-                      disabled={reminderSaving || !push.subscribed}
+                      disabled={reminderSaving}
                       className="px-2.5 py-1 rounded-full text-xs font-medium bg-white border border-blue-200
                         text-blue-600 hover:bg-blue-100 active:scale-95 transition disabled:opacity-40"
                     >
                       {label}
                     </button>
                   ))}
-                  {!push.subscribed && (
-                    <span className="text-xs text-gray-400">알림을 먼저 켜주세요</span>
-                  )}
                 </>
               )}
             </div>
