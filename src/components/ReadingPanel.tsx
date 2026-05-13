@@ -274,20 +274,14 @@ export default function ReadingPanel({
                 {bm.title || bm.url}
               </h1>
 
-              {bm.intent && (
-                <div className="flex items-start gap-2 bg-indigo-600 rounded-2xl px-4 py-3">
-                  <span className="text-lg flex-shrink-0">💡</span>
-                  <p className="text-sm text-white leading-relaxed font-medium">{bm.intent}</p>
-                </div>
-              )}
-
+              {/* AI 요약 — 객관적 콘텐츠 정보 */}
               {bm.summary ? (
-                <div className="bg-indigo-50 rounded-2xl overflow-hidden">
-                  <div className="flex items-center gap-1.5 px-4 py-2.5 bg-indigo-100/60 border-b border-indigo-100">
+                <div className="bg-gray-50 rounded-2xl overflow-hidden border border-gray-100">
+                  <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-gray-100">
                     <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-                    <p className="text-xs font-semibold text-indigo-500">AI 요약</p>
+                    <p className="text-xs font-semibold text-gray-500">AI 요약</p>
                   </div>
-                  <p className="text-sm text-indigo-900 leading-relaxed px-4 py-3">{bm.summary}</p>
+                  <p className="text-sm text-gray-700 leading-relaxed px-4 py-3">{bm.summary}</p>
                 </div>
               ) : bm.description ? (
                 <p className="text-sm text-gray-600 leading-relaxed">{bm.description}</p>
@@ -332,38 +326,53 @@ export default function ReadingPanel({
             </div>
           )}
 
-          {/* 내 메모 */}
+          {/* 내 컨텍스트 — 저장 이유 + 메모 (개인 공간) */}
           <div className="rounded-2xl border border-amber-100 overflow-hidden">
+            {/* 저장 이유 */}
+            {bm.intent && (
+              <div className="px-4 pt-3 pb-2 border-b border-amber-100/60">
+                <p className="text-[11px] font-semibold text-amber-400 uppercase tracking-wide mb-1">저장 이유</p>
+                <p className="text-sm text-amber-800 leading-relaxed">{bm.intent}</p>
+              </div>
+            )}
+
+            {/* 메모 */}
             {memoEditing && (
-              <div className="flex items-center justify-end gap-2 px-4 py-2 bg-amber-50 border-b border-amber-100">
-                <button
-                  onClick={() => { setMemoText(bm.memo ?? ""); setMemoEditing(false); }}
-                  className="text-xs text-gray-400 hover:text-gray-600 transition"
-                >취소</button>
-                <button
-                  onClick={handleMemoSave}
-                  disabled={memoSaving || !memoChanged}
-                  className="flex items-center gap-1 text-xs text-white bg-indigo-600 hover:bg-indigo-700
-                    disabled:opacity-40 px-2.5 py-1 rounded-lg active:scale-95 transition"
-                >
-                  <Check className="w-3 h-3" />
-                  {memoSaving ? "저장 중..." : "저장"}
-                </button>
+              <div className="flex items-center justify-between px-4 py-2 bg-amber-50 border-b border-amber-100">
+                <p className="text-[11px] font-semibold text-amber-400 uppercase tracking-wide">메모</p>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => { setMemoText(bm.memo ?? ""); setMemoEditing(false); }}
+                    className="text-xs text-gray-400 hover:text-gray-600 transition"
+                  >취소</button>
+                  <button
+                    onClick={handleMemoSave}
+                    disabled={memoSaving || !memoChanged}
+                    className="flex items-center gap-1 text-xs text-white bg-indigo-600 hover:bg-indigo-700
+                      disabled:opacity-40 px-2.5 py-1 rounded-lg active:scale-95 transition"
+                  >
+                    <Check className="w-3 h-3" />
+                    {memoSaving ? "저장 중..." : "저장"}
+                  </button>
+                </div>
               </div>
             )}
             <div
               className="px-4 py-3 bg-amber-50/40 cursor-text"
               onClick={() => !memoEditing && setMemoEditing(true)}
             >
+              {!memoEditing && !memoText && (
+                <p className="text-[11px] font-semibold text-amber-400 uppercase tracking-wide mb-1">메모</p>
+              )}
               {memoEditing ? (
                 <textarea
                   ref={textareaRef}
                   value={memoText}
                   onChange={(e) => setMemoText(e.target.value)}
-                  placeholder="읽고 나서 떠오른 생각이나 메모를 남겨보세요"
+                  placeholder="읽고 나서 떠오른 생각을 남겨보세요"
                   rows={3}
                   className="w-full text-sm text-amber-900 bg-transparent resize-none focus:outline-none
-                    placeholder:text-amber-200 leading-relaxed"
+                    placeholder:text-amber-300 leading-relaxed"
                 />
               ) : memoText ? (
                 <p className="text-sm text-amber-900 leading-relaxed whitespace-pre-wrap">{memoText}</p>
