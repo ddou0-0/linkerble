@@ -180,6 +180,13 @@ export default function HomePage() {
       .map(([name, count]) => ({ name, count }));
   }, [bookmarks, tab]);
 
+  /* 보관 시 폴더 선택용 — 전체 북마크 기준 (탭 무관) */
+  const allFolderNames = useMemo(() => {
+    const set = new Set<string>();
+    bookmarks.forEach((b) => set.add(b.folder ?? "미분류"));
+    return [...set].filter((f) => f !== "미분류").sort();
+  }, [bookmarks]);
+
   /* 폴더 뷰 드릴다운 시 해당 폴더 항목만 */
   const displayItems = useMemo(() => {
     if (tab === "read" && readView === "folder" && selectedFolder !== null) {
@@ -546,7 +553,7 @@ export default function HomePage() {
 
       {archivingBookmark && (
         <FolderPickerSheet
-          folders={folders.map((f) => f.name)}
+          folders={["미분류", ...allFolderNames]}
           currentFolder={archivingBookmark.folder}
           onSelect={handleArchiveWithFolder}
           onCancel={() => setArchivingBookmark(null)}
