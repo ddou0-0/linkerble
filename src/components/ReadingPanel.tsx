@@ -13,6 +13,7 @@ interface Props {
   onTagClick: (tag: string) => void;
   onMemoUpdate?: (id: string, memo: string) => void;
   onReminderSet?: (id: string, remind_at: string | null) => void;
+  onArchive?: (bookmark: Bookmark) => void;
   folders?: string[];
   onFolderMove?: (id: string, folder: string) => void;
 }
@@ -37,7 +38,7 @@ function getReminderDate(key: string): Date {
 }
 
 export default function ReadingPanel({
-  bookmark, onClose, onReadToggle, onTagClick, onMemoUpdate, onReminderSet, folders, onFolderMove,
+  bookmark, onClose, onReadToggle, onTagClick, onMemoUpdate, onReminderSet, onArchive, folders, onFolderMove,
 }: Props) {
   /* ── 애니메이션 상태 ── */
   const [displayBookmark, setDisplayBookmark] = useState<Bookmark | null>(null);
@@ -190,7 +191,7 @@ export default function ReadingPanel({
           transition-all duration-300 ease-out ${
           panelVisible ? "translate-y-0" : "translate-y-full"
         } ${
-          expanded ? "h-screen rounded-none" : "h-[88vh] rounded-t-3xl"
+          expanded ? "h-[100dvh] rounded-none" : "h-[88svh] rounded-t-3xl"
         }`}
       >
         {/* Handle — 드래그로 확장/닫기 */}
@@ -417,7 +418,10 @@ export default function ReadingPanel({
             원문보기
           </a>
           <button
-            onClick={handleReadToggle}
+            onClick={() => {
+              if (!bm.is_read && onArchive) onArchive(bm);
+              else handleReadToggle();
+            }}
             className={`flex-1 py-3.5 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2
               active:scale-[0.97] transition ${
               bm.is_read

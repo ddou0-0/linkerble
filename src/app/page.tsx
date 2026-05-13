@@ -8,6 +8,7 @@ import { Bookmark } from "@/lib/types";
 import AddBookmarkForm from "@/components/AddBookmarkForm";
 import BookmarkCard from "@/components/BookmarkCard";
 import ReadingPanel from "@/components/ReadingPanel";
+import FolderPickerSheet from "@/components/FolderPickerSheet";
 import Toast from "@/components/Toast";
 import { LogOut, Search, Settings, Archive, UserCircle2, Bell, X } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -46,6 +47,7 @@ export default function HomePage() {
   const [visibleCount, setVisibleCount] = useState(10);
   const [notifDismissed, setNotifDismissed] = useState(true); // true = 숨김 (초기)
   const [toast, setToast] = useState<string | null>(null);
+  const [archivingBookmark, setArchivingBookmark] = useState<Bookmark | null>(null);
   const [readView, setReadView] = useState<"list" | "folder">("list");
   const [editingFolder, setEditingFolder] = useState<string | null>(null);
   const [editFolderName, setEditFolderName] = useState("");
@@ -101,6 +103,20 @@ export default function HomePage() {
   function handleFolderMove(id: string, folder: string) {
     setBookmarks((prev) => prev.map((b) => (b.id === id ? { ...b, folder } : b)));
     setOpenBookmark((prev) => (prev?.id === id ? { ...prev, folder } : prev));
+  }
+
+  async function handleArchiveWithFolder(folder: string) {
+    if (!archivingBookmark) return;
+    const id = archivingBookmark.id;
+    await fetch(`/api/bookmarks/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ is_read: true, folder }),
+    });
+    setBookmarks((prev) => prev.map((b) => b.id === id ? { ...b, is_read: true, folder } : b));
+    setOpenBookmark(null);
+    setArchivingBookmark(null);
+    setToast("✓ 보관됐어요");
   }
 
   async function handleRename(oldName: string, newName: string) {
@@ -495,6 +511,7 @@ export default function HomePage() {
                         onTagClick={(tag) => setQuery(tag)}
                         onReadToggle={handleReadToggle}
                         onOpen={setOpenBookmark}
+                        onArchive={setArchivingBookmark}
                         query={query}
                       />
                     </div>
@@ -522,9 +539,19 @@ export default function HomePage() {
         onTagClick={(tag) => { setQuery(tag); setOpenBookmark(null); }}
         onMemoUpdate={handleMemoUpdate}
         onReminderSet={handleReminderSet}
+        onArchive={setArchivingBookmark}
         folders={folders.map((f) => f.name)}
         onFolderMove={handleFolderMove}
       />
+
+      {archivingBookmark && (
+        <FolderPickerSheet
+          folders={folders.map((f) => f.name)}
+          currentFolder={archivingBookmark.folder}
+          onSelect={handleArchiveWithFolder}
+          onCancel={() => setArchivingBookmark(null)}
+        />
+      )}
 
       {toast && <Toast message={toast} onDone={() => setToast(null)} />}
     </div>

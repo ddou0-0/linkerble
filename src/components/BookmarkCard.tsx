@@ -10,6 +10,7 @@ interface Props {
   onTagClick: (tag: string) => void;
   onReadToggle: (id: string, is_read: boolean) => void;
   onOpen: (bookmark: Bookmark) => void;
+  onArchive?: (bookmark: Bookmark) => void;
   query?: string;
 }
 
@@ -28,7 +29,7 @@ function Highlight({ text, query }: { text: string; query?: string }) {
   );
 }
 
-export default function BookmarkCard({ bookmark, onDelete, onTagClick, onReadToggle, onOpen, query }: Props) {
+export default function BookmarkCard({ bookmark, onDelete, onTagClick, onReadToggle, onOpen, onArchive, query }: Props) {
   const [deleting, setDeleting] = useState(false);
   const [toggling, setToggling] = useState(false);
 
@@ -73,7 +74,11 @@ export default function BookmarkCard({ bookmark, onDelete, onTagClick, onReadTog
             className="w-full h-full object-cover"
             onError={(e) => (e.currentTarget.style.display = "none")} />
           <button
-            onClick={(e) => { e.stopPropagation(); handleReadToggle(e); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!bookmark.is_read && onArchive) onArchive(bookmark);
+              else handleReadToggle(e);
+            }}
             disabled={toggling}
             className="absolute top-2 right-2 p-1.5 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50 transition disabled:opacity-40"
           >
@@ -117,7 +122,11 @@ export default function BookmarkCard({ bookmark, onDelete, onTagClick, onReadTog
             className="w-full h-full object-cover"
             onError={(e) => (e.currentTarget.style.display = "none")} />
           <button
-            onClick={(e) => { e.stopPropagation(); handleReadToggle(e as any); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onArchive) onArchive(bookmark);
+              else handleReadToggle(e as any);
+            }}
             disabled={toggling}
             title="보관"
             className="absolute top-2 right-2 p-1.5 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50 transition disabled:opacity-40"
@@ -148,7 +157,7 @@ export default function BookmarkCard({ bookmark, onDelete, onTagClick, onReadTog
 
         {/* Intent (저장 이유) */}
         {bookmark.intent && !bookmark.is_read && (
-          <p className="text-xs font-medium text-indigo-600 leading-relaxed line-clamp-2">
+          <p className="text-xs font-medium text-gray-500 leading-relaxed line-clamp-2">
             <Highlight text={bookmark.intent} query={query} />
           </p>
         )}
@@ -200,7 +209,11 @@ export default function BookmarkCard({ bookmark, onDelete, onTagClick, onReadTog
             {/* 미보관 + og_image 없을 때만 보관 버튼 */}
             {!bookmark.is_read && !bookmark.og_image && (
               <button
-                onClick={(e) => { e.stopPropagation(); handleReadToggle(e); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onArchive) onArchive(bookmark);
+                  else handleReadToggle(e);
+                }}
                 disabled={toggling}
                 title="보관"
                 className="p-1 rounded-lg text-gray-300 hover:text-gray-500 hover:bg-gray-100 transition disabled:opacity-40"
