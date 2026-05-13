@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Link2 } from "lucide-react";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -89,6 +90,12 @@ export default function LoginPage() {
             </div>
           )}
         </div>
+        <p className="mt-6 text-center text-xs text-gray-400">
+          Linkerble이 처음이신가요?{" "}
+          <Link href="/intro" className="text-indigo-500 hover:underline font-medium">
+            서비스 소개 보기
+          </Link>
+        </p>
       </div>
     </div>
   );
