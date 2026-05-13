@@ -185,18 +185,22 @@ export default function ReadingPanel({
         onClick={onClose}
       />
 
-      {/* Panel */}
+      {/* Panel — mobile: bottom sheet / desktop: right side panel */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-50 flex flex-col bg-white shadow-2xl overflow-hidden
-          transition-all duration-300 ease-out ${
-          panelVisible ? "translate-y-0" : "translate-y-full"
-        } ${
-          expanded ? "h-[100dvh] rounded-none" : "h-[88svh] rounded-t-3xl"
-        }`}
+        className={`fixed z-50 flex flex-col bg-white shadow-2xl overflow-hidden transition-all duration-300 ease-out
+          /* mobile */
+          inset-x-0 bottom-0
+          ${expanded ? "h-[100dvh] rounded-none" : "h-[88svh] rounded-t-3xl"}
+          ${panelVisible ? "translate-y-0" : "translate-y-full"}
+          /* desktop */
+          md:inset-x-auto md:inset-y-0 md:right-0 md:w-[480px] md:h-full md:rounded-none md:rounded-l-3xl
+          ${panelVisible ? "md:translate-x-0" : "md:translate-x-full"}
+          md:translate-y-0
+        `}
       >
-        {/* Handle — 드래그로 확장/닫기 */}
+        {/* Handle — 모바일 드래그용 (PC에서 숨김) */}
         <div
-          className="flex justify-center pt-3 pb-1 flex-shrink-0 touch-none select-none"
+          className="md:hidden flex justify-center pt-3 pb-1 flex-shrink-0 touch-none select-none"
           onTouchStart={onHandleTouchStart}
           onTouchEnd={onHandleTouchEnd}
         >
@@ -226,7 +230,7 @@ export default function ReadingPanel({
         {/* Content — scrollable */}
         <div
           ref={contentRef}
-          className={`flex-1 px-5 py-4 space-y-4 ${expanded ? "overflow-y-auto" : "overflow-hidden"}`}
+          className={`flex-1 px-5 py-4 space-y-4 md:overflow-y-auto ${expanded ? "overflow-y-auto" : "overflow-hidden"}`}
           onTouchStart={(e) => { dragContentY.current = e.touches[0].clientY; }}
           onTouchEnd={(e) => {
             const dy = dragContentY.current - e.changedTouches[0].clientY;
@@ -399,9 +403,9 @@ export default function ReadingPanel({
           </p>
         </div>
 
-        {/* 부분 표시일 때 더 있다는 페이드 힌트 */}
+        {/* 페이드 힌트 — 모바일 미확장 시만 표시 */}
         {!expanded && (
-          <div className="pointer-events-none flex-shrink-0 h-10 -mt-10
+          <div className="md:hidden pointer-events-none flex-shrink-0 h-10 -mt-10
             bg-gradient-to-t from-white to-transparent" />
         )}
 
