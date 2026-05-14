@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linkerble 로그인</title>
+</head>
+<body style="margin:0;padding:0;background:#F6F7F8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F6F7F8;padding:40px 16px;">
+    <tr>
+      <td align="center">
+        <table width="100%" style="max-width:480px;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background:#083CCC;padding:28px 32px;text-align:center;">
+              <table cellpadding="0" cellspacing="0" style="margin:0 auto;">
+                <tr>
+                  <td style="background:rgba(255,255,255,0.15);border-radius:12px;padding:8px 10px;vertical-align:middle;">
+                    <span style="font-size:18px;line-height:1;">🔗</span>
+                  </td>
+                  <td style="padding-left:10px;vertical-align:middle;">
+                    <span style="color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.3px;">Linkerble</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:36px 32px 28px;">
+              <p style="margin:0 0 8px;font-size:22px;font-weight:700;color:#1A1A1E;letter-spacing:-0.3px;">로그인 링크가 도착했어요 👋</p>
+              <p style="margin:0 0 28px;font-size:15px;color:#768091;line-height:1.6;">
+                아래 버튼을 클릭하면 바로 Linkerble에 로그인돼요.<br />
+                링크는 <strong style="color:#3E434B;">24시간</strong> 동안 유효하고, <strong style="color:#3E434B;">1회만</strong> 사용할 수 있어요.
+              </p>
+
+              <!-- CTA Button -->
+              <table cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center">
+                    <a href="{{ .ConfirmationURL }}"
+                       style="display:inline-block;padding:15px 40px;background:#083CCC;color:#ffffff;font-size:16px;font-weight:700;text-decoration:none;border-radius:14px;letter-spacing:-0.2px;">
+                      로그인하기 →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Divider -->
+              <table cellpadding="0" cellspacing="0" width="100%" style="margin:28px 0 0;">
+                <tr>
+                  <td style="border-top:1px solid #E6E8EA;"></td>
+                </tr>
+              </table>
+
+              <!-- URL fallback -->
+              <p style="margin:20px 0 6px;font-size:12px;color:#949BA8;">버튼이 작동하지 않으면 아래 링크를 브라우저에 직접 붙여넣어 주세요.</p>
+              <p style="margin:0;word-break:break-all;">
+                <a href="{{ .ConfirmationURL }}" style="font-size:12px;color:#083CCC;text-decoration:underline;">{{ .ConfirmationURL }}</a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Warning -->
+          <tr>
+            <td style="padding:0 32px 28px;">
+              <table cellpadding="0" cellspacing="0" width="100%" style="background:#F0F2FA;border-radius:12px;padding:14px 16px;">
+                <tr>
+                  <td>
+                    <p style="margin:0;font-size:12px;color:#575F6C;line-height:1.6;">
+                      🔒 &nbsp;본인이 요청하지 않은 메일이라면 무시하셔도 돼요.<br />
+                      이 링크는 다른 사람과 공유하지 마세요.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:#F6F7F8;padding:20px 32px;text-align:center;border-top:1px solid #E6E8EA;">
+              <p style="margin:0 0 4px;font-size:12px;color:#949BA8;">정보를 의미 있게 보관하는 가장 쉬운 방법</p>
+              <p style="margin:0;font-size:12px;color:#C2C6CD;">© 2025 Linkerble</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

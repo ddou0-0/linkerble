@@ -47,17 +47,34 @@ export default function LoginPage() {
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
           {sent ? (
-            <div className="text-center space-y-3 py-4">
+            <div className="text-center space-y-4 py-4">
               <div className="text-4xl">📬</div>
-              <h2 className="font-bold text-gray-900">메일을 확인해주세요</h2>
-              <p className="text-sm text-gray-500 leading-relaxed">
-                <span className="font-medium text-gray-700">{email}</span>으로<br />
-                로그인 링크를 보냈어요.<br />
-                링크를 클릭하면 바로 시작할 수 있어요!
-              </p>
+              <div>
+                <h2 className="font-bold text-gray-900 mb-1">메일을 확인해주세요</h2>
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  <span className="font-medium text-gray-700">{email}</span>으로<br />
+                  로그인 링크를 보냈어요.
+                </p>
+              </div>
+              <a
+                href={
+                  email.endsWith("@gmail.com") ? "https://mail.google.com" :
+                  email.endsWith("@naver.com") ? "https://mail.naver.com" :
+                  email.endsWith("@kakao.com") || email.endsWith("@daum.net") ? "https://mail.kakao.com" :
+                  email.endsWith("@hanmail.net") ? "https://mail.daum.net" :
+                  email.endsWith("@outlook.com") || email.endsWith("@hotmail.com") ? "https://outlook.live.com" :
+                  email.endsWith("@yahoo.com") ? "https://mail.yahoo.com" :
+                  `mailto:${email}`
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition"
+              >
+                <span>📩</span> 메일함 열기
+              </a>
               <button
                 onClick={() => { setSent(false); setEmail(""); }}
-                className="text-xs text-indigo-500 hover:underline mt-2"
+                className="text-xs text-gray-400 hover:text-gray-500 transition"
               >
                 다른 이메일로 시도하기
               </button>
@@ -90,9 +107,8 @@ export default function LoginPage() {
             </div>
           )}
         </div>
-        <p className="mt-6 text-center text-xs text-gray-400">
-          Linkerble이 처음이신가요?{" "}
-          <Link href="/intro" className="text-indigo-500 hover:underline font-medium">
+        <p className="mt-5 text-center text-[11px] text-gray-300">
+          <Link href="/intro" className="hover:text-gray-400 transition">
             서비스 소개 보기
           </Link>
         </p>

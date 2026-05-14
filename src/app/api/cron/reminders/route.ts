@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import webpush from "web-push";
 
 webpush.setVapidDetails(
@@ -9,32 +8,51 @@ webpush.setVapidDetails(
 );
 
 // GET /api/cron/reminders — 만료된 리마인더 푸시 후 remind_at 초기화
-// Vercel cron: "*/5 * * * *" or 매일 특정 시간
+// vercel.json cron: "*/5 * * * *"
 export async function GET(req: NextRequest) {
-  // 크론 시크릿 체크 (CRON_SECRET 환경 변수 설정 권장)
-  const secret = process.env.CRON_SECRET;
-  if (secret && req.headers.get("x-cron-secret") !== secret) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // Vercel cron은 자동으로 Authorization: Bearer <CRON_SECRET> 헤더를 보냄
+  const cronSecret = process.env.CRON_SECRET;
+  if (cronSecret) {
+    const authHeader = req.headers.get("authorization");
+    const xCronSecret = req.headers.get("x-cron-secret");
+    if (
+      authHeader !== `Bearer ${cronSecret}` &&
+      xCronSecret !== cronSecret
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
   }
 
-  // supabase service role로 직접 접근 (인증 없이)
-  const { createClient: createSC } = await import("@supabase/supabase-js");
-  const supabase = createSC(
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!serviceKey) {
+    console.error("[reminders] SUPABASE_SERVICE_ROLE_KEY is not set");
+    return NextResponse.json({ error: "Server misconfigured: missing service key" }, { status: 500 });
+  }
+
+  const { createClient } = await import("@supabase/supabase-js");
+  const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    serviceKey
   );
 
   const now = new Date();
   const tenMinAgo = new Date(now.getTime() - 10 * 60 * 1000);
 
-  // 지금~10분 전 사이에 remind_at이 걸린 북마크 (중복 발송 방지)
-  const { data: due } = await supabase
+  // 지금~10분 전 사이에 remind_at이 걸린 북마크
+  const { data: due, error: fetchError } = await supabase
     .from("bookmarks")
     .select("id, user_id, title, url, remind_at")
     .lte("remind_at", now.toISOString())
     .gte("remind_at", tenMinAgo.toISOString());
 
-  if (!due?.length) return NextResponse.json({ sent: 0 });
+  if (fetchError) {
+    console.error("[reminders] DB fetch error:", fetchError);
+    return NextResponse.json({ error: fetchError.message }, { status: 500 });
+  }
+
+  console.log(`[reminders] due count: ${due?.length ?? 0} at ${now.toISOString()}`);
+
+  if (!due?.length) return NextResponse.json({ sent: 0, checked: now.toISOString() });
 
   let sent = 0;
   for (const bookmark of due) {
@@ -43,7 +61,12 @@ export async function GET(req: NextRequest) {
       .select("endpoint, p256dh, auth")
       .eq("user_id", bookmark.user_id);
 
-    if (!subs?.length) continue;
+    if (!subs?.length) {
+      console.log(`[reminders] no push subs for user ${bookmark.user_id}`);
+      // 구독 없어도 remind_at은 초기화
+      await supabase.from("bookmarks").update({ remind_at: null }).eq("id", bookmark.id);
+      continue;
+    }
 
     const payload = JSON.stringify({
       title: "🔔 리마인더",
@@ -51,7 +74,7 @@ export async function GET(req: NextRequest) {
       url: "/",
     });
 
-    await Promise.allSettled(
+    const results = await Promise.allSettled(
       subs.map((s) =>
         webpush.sendNotification(
           { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },
@@ -60,14 +83,16 @@ export async function GET(req: NextRequest) {
       )
     );
 
+    const failed = results.filter((r) => r.status === "rejected");
+    if (failed.length) {
+      console.warn(`[reminders] ${failed.length}/${subs.length} push failed for bookmark ${bookmark.id}`);
+    }
+
     // 발송 후 remind_at 초기화
-    await supabase
-      .from("bookmarks")
-      .update({ remind_at: null })
-      .eq("id", bookmark.id);
+    await supabase.from("bookmarks").update({ remind_at: null }).eq("id", bookmark.id);
 
     sent++;
   }
 
-  return NextResponse.json({ sent });
+  return NextResponse.json({ sent, total: due.length, checked: now.toISOString() });
 }
