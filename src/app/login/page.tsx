@@ -31,7 +31,8 @@ export default function LoginPage() {
       },
     });
     if (error) {
-      const match = error.message.match(/after (\d+) seconds/);
+      const msg = error.message;
+      const match = msg.match(/after (\d+) seconds/);
       if (match) {
         const secs = parseInt(match[1]);
         setCooldown(secs);
@@ -41,8 +42,12 @@ export default function LoginPage() {
             return prev - 1;
           });
         }, 1000);
+      } else if (msg.includes("rate limit") || msg.includes("rate_limit")) {
+        setError("이메일 전송 횟수를 초과했어요. 잠시 후 다시 시도해주세요.");
+      } else if (msg.includes("invalid email") || msg.includes("valid email")) {
+        setError("올바른 이메일 주소를 입력해주세요.");
       } else {
-        setError(error.message);
+        setError("오류가 발생했어요. 잠시 후 다시 시도해주세요.");
       }
     } else setSent(true);
     setLoading(false);
