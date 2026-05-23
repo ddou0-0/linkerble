@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
 
   useEffect(() => {
     createClient().auth.getUser().then(({ data }: { data: { user: unknown } }) => {
@@ -29,8 +30,21 @@ export default function LoginPage() {
         emailRedirectTo: `${window.location.origin}/auth/confirm`,
       },
     });
-    if (error) setError(error.message);
-    else setSent(true);
+    if (error) {
+      const match = error.message.match(/after (\d+) seconds/);
+      if (match) {
+        const secs = parseInt(match[1]);
+        setCooldown(secs);
+        const timer = setInterval(() => {
+          setCooldown((prev) => {
+            if (prev <= 1) { clearInterval(timer); return 0; }
+            return prev - 1;
+          });
+        }, 1000);
+      } else {
+        setError(error.message);
+      }
+    } else setSent(true);
     setLoading(false);
   }
 
@@ -96,12 +110,17 @@ export default function LoginPage() {
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 />
                 {error && <p className="text-xs text-red-500">{error}</p>}
+                {cooldown > 0 && (
+                  <p className="text-xs text-amber-500 text-center">
+                    {cooldown}초 후에 다시 시도할 수 있어요
+                  </p>
+                )}
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || cooldown > 0}
                   className="w-full py-3 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition disabled:opacity-50"
                 >
-                  {loading ? "전송 중..." : "로그인 링크 받기"}
+                  {loading ? "전송 중..." : cooldown > 0 ? `${cooldown}초 대기 중...` : "로그인 링크 받기"}
                 </button>
               </form>
             </div>
