@@ -217,10 +217,132 @@ export default function HomePage() {
     return GROUP_ORDER.filter((g) => map.has(g)).map((g) => ({ label: g, items: map.get(g)! }));
   }, [displayItems, visibleCount, tab, readView, selectedFolder]);
 
+  /* PC 사이드바 유저 메뉴 */
+  function SidebarUserMenu() {
+    return (
+      <div className="relative">
+        <button
+          onClick={() => setMenuOpen((v) => !v)}
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-gray-500 hover:bg-gray-100 transition"
+        >
+          <UserCircle2 className="w-4 h-4 flex-shrink-0" />
+          <span className="truncate text-xs">{userEmail}</span>
+        </button>
+        {menuOpen && (
+          <>
+            <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
+            <div className="absolute bottom-full left-0 mb-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 z-20 overflow-hidden">
+              <Link
+                href="/settings"
+                onClick={() => setMenuOpen(false)}
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition"
+              >
+                <Settings className="w-4 h-4" />
+                설정 · 저장 단축어
+              </Link>
+              <Link
+                href="/intro"
+                onClick={() => setMenuOpen(false)}
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition"
+              >
+                <Info className="w-4 h-4" />
+                서비스 소개
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition border-t border-gray-100"
+              >
+                <LogOut className="w-4 h-4" />
+                로그아웃
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Header */}
-      <header className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-gray-200">
+    <div className="min-h-screen bg-gray-50 lg:flex">
+      {/* ── PC 사이드바 ── */}
+      <aside className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:left-0 lg:w-64 lg:bg-white lg:border-r lg:border-gray-200 lg:z-20">
+        {/* 로고 */}
+        <div className="px-5 py-4 border-b border-gray-100">
+          <button
+            onClick={() => window.location.reload()}
+            className="font-bold text-base tracking-tight hover:opacity-70 transition"
+          >
+            Linkerble
+          </button>
+        </div>
+
+        {/* URL 추가 */}
+        <div className="px-4 py-4 border-b border-gray-100">
+          <AddBookmarkForm onAdded={handleAdded} compact />
+        </div>
+
+        {/* 탭 내비게이션 */}
+        <nav className="px-3 py-3 space-y-0.5">
+          <button
+            onClick={() => { setTab("unread"); setActiveFolder(""); }}
+            className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition ${
+              tab === "unread" ? "bg-indigo-50 text-indigo-700" : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <span className="text-base">📥</span> 읽을 것
+            </span>
+            {unreadCount > 0 && (
+              <span className="px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-600 text-[10px] font-bold">
+                {unreadCount}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => { setTab("read"); setActiveFolder(""); }}
+            className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition ${
+              tab === "read" ? "bg-indigo-50 text-indigo-700" : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            <Archive className="w-4 h-4" /> 보관됨
+          </button>
+        </nav>
+
+        {/* 폴더 목록 */}
+        {folders.length > 0 && (
+          <div className="px-3 py-2 flex-1 overflow-y-auto">
+            <p className="px-3 text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">폴더</p>
+            <button
+              onClick={() => setActiveFolder("")}
+              className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs transition ${
+                !activeFolder ? "bg-indigo-50 text-indigo-600 font-medium" : "text-gray-500 hover:bg-gray-100"
+              }`}
+            >
+              전체
+            </button>
+            {folders.map(({ name, count }) => (
+              <button
+                key={name}
+                onClick={() => setActiveFolder(activeFolder === name ? "" : name)}
+                className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs transition ${
+                  activeFolder === name ? "bg-indigo-50 text-indigo-600 font-medium" : "text-gray-500 hover:bg-gray-100"
+                }`}
+              >
+                <span className="truncate">{name}</span>
+                <span className="text-[10px] text-gray-400 ml-1">{count}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* 하단: 유저 */}
+        <div className="px-3 py-3 border-t border-gray-100 mt-auto">
+          <SidebarUserMenu />
+        </div>
+      </aside>
+
+      {/* ── 모바일 헤더 ── */}
+      <header className="lg:hidden sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-gray-200">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <button
             onClick={() => window.location.reload()}
@@ -230,7 +352,6 @@ export default function HomePage() {
           </button>
 
           <div className="flex items-center gap-1">
-            {/* 보관됨 바로가기 */}
             <button
               onClick={() => { setTab("read"); setActiveFolder(""); }}
               title="보관됨"
@@ -242,7 +363,6 @@ export default function HomePage() {
               )}
             </button>
 
-            {/* 마이페이지 */}
             <div className="relative">
               <button
                 onClick={() => setMenuOpen((v) => !v)}
@@ -291,8 +411,10 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-4 space-y-4">
-        {tab === "unread" && <AddBookmarkForm onAdded={handleAdded} />}
+      {/* ── 메인 콘텐츠 ── */}
+      <div className="flex-1 flex flex-col lg:pl-64">
+      <main className="flex-1 max-w-2xl mx-auto w-full lg:max-w-3xl px-4 py-4 space-y-4">
+        {tab === "unread" && <AddBookmarkForm onAdded={handleAdded} className="lg:hidden" />}
 
         {/* 검색 */}
         <div className="relative">
@@ -546,6 +668,7 @@ export default function HomePage() {
           </div>
         )}
       </main>
+      </div>
 
       <ReadingPanel
         bookmark={openBookmark}

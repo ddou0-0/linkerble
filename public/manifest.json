@@ -1,21 +1,55 @@
 {
   "name": "Linkerble",
   "short_name": "Linkerble",
-  "description": "Save URLs. AI summarizes & tags them for you.",
+  "description": "링크 던지면 AI가 정리해요",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "background_color": "#f9fafb",
   "theme_color": "#6366f1",
+  "categories": ["productivity", "utilities"],
   "icons": [
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "GET",
+    "params": {
+      "url": "url",
+      "text": "text",
+      "title": "title"
+    }
+  },
+  "shortcuts": [
+    {
+      "name": "링크 추가",
+      "url": "/?action=add",
+      "description": "새 링크 바로 저장"
+    }
+  ],
+  "prefer_related_applications": false
 }

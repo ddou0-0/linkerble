@@ -3,11 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import webpush from "web-push";
 import Anthropic from "@anthropic-ai/sdk";
 
-webpush.setVapidDetails(
-  process.env.VAPID_SUBJECT!,
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-);
+if (process.env.VAPID_SUBJECT && process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  webpush.setVapidDetails(process.env.VAPID_SUBJECT, process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY, process.env.VAPID_PRIVATE_KEY);
+}
 
 // POST /api/push/daily — 오늘의 추천 링크 3개 푸시
 export async function POST(req: NextRequest) {

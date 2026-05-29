@@ -6,6 +6,8 @@ import { Bookmark } from "@/lib/types";
 
 interface Props {
   onAdded: (bookmark: Bookmark) => void;
+  compact?: boolean;
+  className?: string;
 }
 
 const QUICK_INTENTS = [
@@ -22,7 +24,7 @@ function extractUrl(text: string): string | null {
   return match ? match[0] : null;
 }
 
-export default function AddBookmarkForm({ onAdded }: Props) {
+export default function AddBookmarkForm({ onAdded, compact = false, className }: Props) {
   const [text, setText] = useState("");
   const [selectedIntent, setSelectedIntent] = useState("");
   const [customMemo, setCustomMemo] = useState("");
@@ -94,7 +96,7 @@ export default function AddBookmarkForm({ onAdded }: Props) {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+    <div className={`bg-white rounded-2xl border border-gray-200 overflow-hidden${className ? ` ${className}` : ""}`}>
       <form onSubmit={handleSubmit}>
         {/* 텍스트 입력 */}
         <div className="flex gap-2 p-3 items-start">
@@ -102,7 +104,7 @@ export default function AddBookmarkForm({ onAdded }: Props) {
             <textarea
               ref={textareaRef}
               rows={1}
-              placeholder="URL 또는 카카오톡 내용을 붙여넣으세요"
+              placeholder={compact ? "URL 붙여넣기..." : "URL 또는 카카오톡 내용을 붙여넣으세요"}
               value={text}
               onChange={handleChange}
               disabled={loading}
