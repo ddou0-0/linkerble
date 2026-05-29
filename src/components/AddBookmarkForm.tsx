@@ -8,6 +8,7 @@ interface Props {
   onAdded: (bookmark: Bookmark) => void;
   compact?: boolean;
   className?: string;
+  initialUrl?: string;
 }
 
 const QUICK_INTENTS = [
@@ -24,8 +25,8 @@ function extractUrl(text: string): string | null {
   return match ? match[0] : null;
 }
 
-export default function AddBookmarkForm({ onAdded, compact = false, className }: Props) {
-  const [text, setText] = useState("");
+export default function AddBookmarkForm({ onAdded, compact = false, className, initialUrl }: Props) {
+  const [text, setText] = useState(initialUrl ?? "");
   const [selectedIntent, setSelectedIntent] = useState("");
   const [customMemo, setCustomMemo] = useState("");
   const [loading, setLoading] = useState(false);
