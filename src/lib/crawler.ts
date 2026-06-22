@@ -22,7 +22,8 @@ export async function crawlUrl(url: string): Promise<CrawlResult> {
   });
 
   if (!res.ok) {
-    throw new Error(`Failed to fetch URL: ${res.status}`);
+    const domain = new URL(url).hostname;
+    return { url, title: domain, description: "", favicon_url: `https://${domain}/favicon.ico`, og_image: "", domain, text_content: "" };
   }
 
   // 이미지 URL이면 HTML 파싱 없이 바로 반환

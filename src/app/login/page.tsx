@@ -47,7 +47,8 @@ export default function LoginPage() {
       } else if (msg.includes("invalid email") || msg.includes("valid email")) {
         setError("올바른 이메일 주소를 입력해주세요.");
       } else {
-        setError("오류가 발생했어요. 잠시 후 다시 시도해주세요.");
+        console.error("[login] signInWithOtp error:", msg);
+        setError(`오류가 발생했어요. 잠시 후 다시 시도해주세요. (${msg})`);
       }
     } else setSent(true);
     setLoading(false);
