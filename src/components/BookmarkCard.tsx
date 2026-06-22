@@ -115,24 +115,26 @@ export default function BookmarkCard({ bookmark, onDelete, onTagClick, onReadTog
           : "border-gray-200 hover:shadow-md"
       }`}
     >
-      {/* OG Image with archive overlay */}
-      {bookmark.og_image && !bookmark.is_read && (
+      {/* OG Image */}
+      {bookmark.og_image && (
         <div className="relative aspect-[2/1] overflow-hidden bg-gray-100">
           <img src={bookmark.og_image} alt=""
             className="w-full h-full object-cover"
             onError={(e) => (e.currentTarget.style.display = "none")} />
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (onArchive) onArchive(bookmark);
-              else handleReadToggle(e as any);
-            }}
-            disabled={toggling}
-            title="보관"
-            className="absolute top-2 right-2 p-1.5 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50 transition disabled:opacity-40"
-          >
-            <Archive className="w-3.5 h-3.5" />
-          </button>
+          {!bookmark.is_read && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onArchive) onArchive(bookmark);
+                else handleReadToggle(e as any);
+              }}
+              disabled={toggling}
+              title="보관"
+              className="absolute top-2 right-2 p-1.5 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50 transition disabled:opacity-40"
+            >
+              <Archive className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       )}
 
@@ -149,7 +151,7 @@ export default function BookmarkCard({ bookmark, onDelete, onTagClick, onReadTog
           )}
           <div className="flex-1 min-w-0">
             <p className="text-xs text-gray-400 truncate">{bookmark.domain}</p>
-            <p className="font-semibold text-sm leading-snug line-clamp-2 text-gray-900">
+            <p className="font-semibold text-sm leading-snug line-clamp-1 text-gray-900">
               <Highlight text={bookmark.title || bookmark.url} query={query} />
             </p>
           </div>
@@ -163,7 +165,7 @@ export default function BookmarkCard({ bookmark, onDelete, onTagClick, onReadTog
         )}
 
         {/* AI Summary */}
-        {bookmark.summary && !bookmark.is_read && (
+        {bookmark.summary && (
           <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">
             <Highlight text={bookmark.summary} query={query} />
           </p>
