@@ -140,6 +140,8 @@ export default function HomePage() {
 
   useEffect(() => { setVisibleCount(10); }, [tab, activeFolder, query, selectedFolder]);
   useEffect(() => { setEditingFolder(null); setSelectedFolder(null); }, [tab, readView]);
+  // 검색 시 폴더 뷰 → 리스트 뷰 자동 전환
+  useEffect(() => { if (query.trim()) setReadView("list"); }, [query]);
 
   /* 탭 + 폴더 + 검색 필터 */
   const filtered = useMemo(() => {
