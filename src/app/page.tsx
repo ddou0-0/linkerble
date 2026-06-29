@@ -224,15 +224,19 @@ export default function HomePage() {
     <div className="min-h-screen bg-gray-50">
       {/* ── 헤더 ── */}
       <header className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-gray-200">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
           <button
             onClick={() => window.location.reload()}
-            className="font-bold text-sm tracking-tight px-1 hover:opacity-70 transition"
+            className="font-bold text-sm tracking-tight px-1 hover:opacity-70 transition flex-shrink-0"
           >
             Linkerble
           </button>
 
-          <div className="flex items-center gap-1">
+          <div className="flex-1">
+            <AddBookmarkForm onAdded={handleAdded} compact flat />
+          </div>
+
+          <div className="flex items-center gap-1 flex-shrink-0">
             <button
               onClick={() => { setTab("read"); setActiveFolder(""); }}
               title="보관됨"
@@ -295,8 +299,6 @@ export default function HomePage() {
       {/* ── 메인 콘텐츠 ── */}
       <div className="flex-1 flex flex-col">
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-4 space-y-4">
-        {tab === "unread" && <AddBookmarkForm onAdded={handleAdded} />}
-
         {/* 검색 */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />

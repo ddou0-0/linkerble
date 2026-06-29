@@ -7,6 +7,7 @@ import { Bookmark } from "@/lib/types";
 interface Props {
   onAdded: (bookmark: Bookmark) => void;
   compact?: boolean;
+  flat?: boolean;
   className?: string;
   initialUrl?: string;
 }
@@ -25,7 +26,7 @@ function extractUrl(text: string): string | null {
   return match ? match[0] : null;
 }
 
-export default function AddBookmarkForm({ onAdded, compact = false, className, initialUrl }: Props) {
+export default function AddBookmarkForm({ onAdded, compact = false, flat = false, className, initialUrl }: Props) {
   const [text, setText] = useState(initialUrl ?? "");
   const [selectedIntent, setSelectedIntent] = useState("");
   const [customMemo, setCustomMemo] = useState("");
@@ -97,10 +98,10 @@ export default function AddBookmarkForm({ onAdded, compact = false, className, i
   }
 
   return (
-    <div className={`bg-white rounded-2xl border border-gray-200 overflow-hidden${className ? ` ${className}` : ""}`}>
+    <div className={flat ? `${className ?? ""}` : `bg-white rounded-2xl border border-gray-200 overflow-hidden${className ? ` ${className}` : ""}`}>
       <form onSubmit={handleSubmit}>
         {/* 텍스트 입력 */}
-        <div className="flex gap-2 p-3 items-start">
+        <div className={`flex gap-2 items-start${flat ? "" : " p-3"}`}>
           <div className="flex-1 relative">
             <textarea
               ref={textareaRef}
