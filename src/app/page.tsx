@@ -224,19 +224,16 @@ export default function HomePage() {
     <div className="min-h-screen bg-gray-50">
       {/* ── 헤더 ── */}
       <header className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-gray-200">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
+        {/* 1줄: 로고 + 유저 */}
+        <div className="max-w-2xl mx-auto px-4 pt-3 pb-2 flex items-center justify-between">
           <button
             onClick={() => window.location.reload()}
-            className="font-bold text-sm tracking-tight px-1 hover:opacity-70 transition flex-shrink-0"
+            className="font-bold text-sm tracking-tight px-1 hover:opacity-70 transition"
           >
             Linkerble
           </button>
 
-          <div className="flex-1">
-            <AddBookmarkForm onAdded={handleAdded} compact flat />
-          </div>
-
-          <div className="flex items-center gap-1 flex-shrink-0">
+          <div className="flex items-center gap-1">
             <div className="relative">
               <button
                 onClick={() => setMenuOpen((v) => !v)}
@@ -282,6 +279,10 @@ export default function HomePage() {
               )}
             </div>
           </div>
+        </div>
+        {/* 2줄: URL 입력 바 */}
+        <div className="max-w-2xl mx-auto px-4 pb-3 relative">
+          <AddBookmarkForm onAdded={handleAdded} compact flat />
         </div>
       </header>
 

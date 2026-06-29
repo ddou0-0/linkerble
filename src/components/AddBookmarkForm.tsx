@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Plus, Loader2, Pencil, Link2, X } from "lucide-react";
+import { Plus, Loader2, Pencil, X } from "lucide-react";
 import { Bookmark } from "@/lib/types";
 
 interface Props {
@@ -39,13 +39,11 @@ export default function AddBookmarkForm({ onAdded, compact = false, flat = false
   const intentMemo = isCustom ? customMemo.trim() : selectedIntent;
   const showIntents = !!detectedUrl && !loading;
 
-  // 텍스트에서 URL 제거한 순수 컨텍스트 (저장 이유 자동 추출용)
   const contextText = text.replace(URL_REGEX, "").replace(/\s+/g, " ").trim();
 
   function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setText(e.target.value);
     setError("");
-    // 높이 자동 조절
     const el = e.target;
     el.style.height = "auto";
     el.style.height = `${el.scrollHeight}px`;
@@ -69,7 +67,6 @@ export default function AddBookmarkForm({ onAdded, compact = false, flat = false
     setLoading(true);
     setError("");
 
-    // 저장 이유: 직접 입력 > 칩 선택 > 원문 컨텍스트 텍스트
     const memo = intentMemo || contextText || undefined;
 
     try {
@@ -97,11 +94,92 @@ export default function AddBookmarkForm({ onAdded, compact = false, flat = false
     }
   }
 
+  if (flat) {
+    return (
+      <div className={className}>
+        <form onSubmit={handleSubmit}>
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <textarea
+                ref={textareaRef}
+                rows={1}
+                placeholder="URL 붙여넣기..."
+                value={text}
+                onChange={handleChange}
+                disabled={loading}
+                className="w-full pl-4 pr-10 py-2.5 rounded-xl border border-gray-200 text-sm bg-gray-50
+                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white
+                  transition disabled:opacity-50 resize-none overflow-hidden leading-relaxed"
+              />
+              {text && !loading && (
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+            <button
+              type="submit"
+              disabled={loading || !detectedUrl}
+              className="px-4 py-2.5 rounded-xl bg-indigo-600 text-white flex items-center gap-1.5
+                text-sm font-semibold hover:bg-indigo-700 transition disabled:opacity-40 whitespace-nowrap flex-shrink-0"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+              저장
+            </button>
+          </div>
+
+          {/* 저장 이유 칩 — 입력 바 아래 드롭다운 */}
+          {showIntents && (
+            <div className="mt-2 bg-white rounded-xl border border-gray-200 shadow-md px-3 py-3 space-y-2">
+              <p className="text-xs text-gray-400">저장 이유 <span className="text-gray-300">(선택)</span></p>
+              <div className="flex flex-wrap gap-2">
+                {QUICK_INTENTS.map(({ label, value }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => {
+                      setSelectedIntent(selectedIntent === value ? "" : value);
+                      if (value !== "__custom__") setCustomMemo("");
+                    }}
+                    className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition border ${
+                      selectedIntent === value
+                        ? "bg-indigo-600 text-white border-indigo-600"
+                        : "bg-white text-gray-600 border-gray-200 hover:border-indigo-300"
+                    }`}
+                  >
+                    {value === "__custom__" && <Pencil className="w-3 h-3" />}
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {isCustom && (
+                <textarea
+                  value={customMemo}
+                  onChange={(e) => setCustomMemo(e.target.value)}
+                  placeholder={"예) OO님이 추천&#10;예) JAMS 2.0 버튼 작업 참고용"}
+                  rows={2}
+                  autoFocus
+                  className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm bg-gray-50
+                    focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white
+                    transition resize-none placeholder:text-gray-300"
+                />
+              )}
+            </div>
+          )}
+        </form>
+        {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+      </div>
+    );
+  }
+
   return (
-    <div className={flat ? `${className ?? ""}` : `bg-white rounded-2xl border border-gray-200 overflow-hidden${className ? ` ${className}` : ""}`}>
+    <div className={`bg-white rounded-2xl border border-gray-200 overflow-hidden${className ? ` ${className}` : ""}`}>
       <form onSubmit={handleSubmit}>
-        {/* 텍스트 입력 */}
-        <div className={`flex gap-2${flat ? " items-center" : " items-start p-3"}`}>
+        <div className="flex gap-2 items-start p-3">
           <div className="flex-1 relative">
             <textarea
               ref={textareaRef}
@@ -118,9 +196,9 @@ export default function AddBookmarkForm({ onAdded, compact = false, flat = false
               <button
                 type="button"
                 onClick={handleClear}
-                className="absolute right-2 top-2.5 p-0.5 rounded-full text-gray-300 hover:text-gray-500 transition"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-4 h-4" />
               </button>
             )}
           </div>
@@ -134,20 +212,6 @@ export default function AddBookmarkForm({ onAdded, compact = false, flat = false
             {loading ? "저장 중..." : "저장"}
           </button>
         </div>
-
-        {/* URL 감지 칩 */}
-        {text && (
-          <div className="px-3 pb-2 -mt-1">
-            {detectedUrl ? (
-              <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50 w-fit max-w-full">
-                <Link2 className="w-3 h-3 text-indigo-400 flex-shrink-0" />
-                <span className="text-xs text-indigo-600 truncate">{detectedUrl}</span>
-              </div>
-            ) : (
-              <p className="text-xs text-amber-500">URL이 포함된 텍스트를 붙여넣어 주세요</p>
-            )}
-          </div>
-        )}
 
         {/* 저장 이유 칩 */}
         {showIntents && (
