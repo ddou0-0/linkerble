@@ -10,7 +10,7 @@ import BookmarkCard from "@/components/BookmarkCard";
 import ReadingPanel from "@/components/ReadingPanel";
 import FolderPickerSheet from "@/components/FolderPickerSheet";
 import Toast from "@/components/Toast";
-import { LogOut, Search, Settings, Archive, UserCircle2, Bell, X, Info } from "lucide-react";
+import { LogOut, Search, Settings, UserCircle2, Bell, X, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { usePush } from "@/lib/usePush";
@@ -237,17 +237,6 @@ export default function HomePage() {
           </div>
 
           <div className="flex items-center gap-1 flex-shrink-0">
-            <button
-              onClick={() => { setTab("read"); setActiveFolder(""); }}
-              title="보관됨"
-              className={`relative p-2 rounded-xl transition ${tab === "read" ? "bg-indigo-50 text-indigo-600" : "text-gray-400 hover:bg-gray-100"}`}
-            >
-              <Archive className="w-5 h-5" />
-              {bookmarks.filter((b) => b.is_read).length > 0 && (
-                <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-indigo-400" />
-              )}
-            </button>
-
             <div className="relative">
               <button
                 onClick={() => setMenuOpen((v) => !v)}
