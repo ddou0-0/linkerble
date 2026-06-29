@@ -362,7 +362,7 @@ export default function ReadingPanel({
               onClick={() => !memoEditing && setMemoEditing(true)}
             >
               {!memoEditing && !memoText && (
-                <p className="text-[11px] font-semibold text-amber-400 uppercase tracking-wide mb-1">메모</p>
+                <p className="text-[11px] font-semibold text-amber-600 uppercase tracking-wide mb-1">메모</p>
               )}
               {memoEditing ? (
                 <textarea
@@ -372,12 +372,12 @@ export default function ReadingPanel({
                   placeholder="읽고 나서 떠오른 생각을 남겨보세요"
                   rows={3}
                   className="w-full text-sm text-amber-900 bg-transparent resize-none focus:outline-none
-                    placeholder:text-amber-300 leading-relaxed"
+                    placeholder:text-amber-500 leading-relaxed"
                 />
               ) : memoText ? (
                 <p className="text-sm text-amber-900 leading-relaxed whitespace-pre-wrap">{memoText}</p>
               ) : (
-                <p className="text-sm text-amber-300">여기를 눌러 메모를 남겨보세요</p>
+                <p className="text-sm text-amber-600">여기를 눌러 메모를 남겨보세요</p>
               )}
             </div>
           </div>
